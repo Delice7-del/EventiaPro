@@ -1,0 +1,60 @@
+/* header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.page-header p {
+    color: var(--text-secondary);
+}
+
+/* admin grid */
+.admin-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* actions */
+.admin-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+}
+
+.icon-btn {
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.icon-btn.danger {
+    color: var(--danger-color);
+}
+/* empty table state */
+.empty-cell {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary);
+}
+
+.empty-cell i {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* sidebar logout */
+.sidebar-logout {
+    margin-top: 2rem;
+}
+
+.sidebar-logout a.danger {
+    color: var(--danger-color);
+}

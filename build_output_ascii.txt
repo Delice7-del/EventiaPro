@@ -1,0 +1,59 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------< org.example:EventiaPro >-----------------------
+[INFO] Building EventiaPro 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ EventiaPro ---
+[INFO] Deleting C:\Users\HP\IdeaProjects\EventiaPro\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ EventiaPro ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ EventiaPro ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 17 source files with javac [debug target 17] to target\classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/HP/IdeaProjects/EventiaPro/src/main/java/org/example/eventiapro/controller/AdminServlet.java:[20,13] cannot find symbol
+  symbol:   class EventDAO
+  location: class org.example.eventiapro.controller.AdminServlet
+[ERROR] /C:/Users/HP/IdeaProjects/EventiaPro/src/main/java/org/example/eventiapro/controller/AdminServlet.java:[21,13] cannot find symbol
+  symbol:   class RegistrationDAO
+  location: class org.example.eventiapro.controller.AdminServlet
+[ERROR] /C:/Users/HP/IdeaProjects/EventiaPro/src/main/java/org/example/eventiapro/controller/AdminServlet.java:[27,24] cannot find symbol
+  symbol:   class EventDAO
+  location: class org.example.eventiapro.controller.AdminServlet
+[ERROR] /C:/Users/HP/IdeaProjects/EventiaPro/src/main/java/org/example/eventiapro/controller/AdminServlet.java:[28,31] cannot find symbol
+  symbol:   class RegistrationDAO
+  location: class org.example.eventiapro.controller.AdminServlet
+[INFO] 4 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  5.888 s
+[INFO] Finished at: 2026-02-01T07:38:05+02:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project EventiaPro: Compilation failure: Compilation failure: 
+[ERROR] /C:/Users/HP/IdeaProjects/EventiaPro/src/main/java/org/example/eventiapro/controller/AdminServlet.java:[20,13] cannot find symbol
+[ERROR]   symbol:   class EventDAO
+[ERROR]   location: class org.example.eventiapro.controller.AdminServlet
+[ERROR] /C:/Users/HP/IdeaProjects/EventiaPro/src/main/java/org/example/eventiapro/controller/AdminServlet.java:[21,13] cannot find symbol
+[ERROR]   symbol:   class RegistrationDAO
+[ERROR]   location: class org.example.eventiapro.controller.AdminServlet
+[ERROR] /C:/Users/HP/IdeaProjects/EventiaPro/src/main/java/org/example/eventiapro/controller/AdminServlet.java:[27,24] cannot find symbol
+[ERROR]   symbol:   class EventDAO
+[ERROR]   location: class org.example.eventiapro.controller.AdminServlet
+[ERROR] /C:/Users/HP/IdeaProjects/EventiaPro/src/main/java/org/example/eventiapro/controller/AdminServlet.java:[28,31] cannot find symbol
+[ERROR]   symbol:   class RegistrationDAO
+[ERROR]   location: class org.example.eventiapro.controller.AdminServlet
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
