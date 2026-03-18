@@ -65,7 +65,7 @@
                         const eventTitle = btn.getAttribute('data-title');
                         const url = window.location.origin + '${pageContext.request.contextPath}/user/event/details/' + eventId;
 
-                        if (navigator.clipboard && window.isSecureContext) {
+                        if (navigator.clipboard) {
                             navigator.clipboard.writeText(url).then(() => {
                                 showToast('Link copied: ' + eventTitle);
                             }).catch(err => {
@@ -242,9 +242,7 @@
                                                 <form
                                                     action="${pageContext.request.contextPath}/user/registrations/check-in/${reg.id != 0 ? reg.id : '501'}"
                                                     method="POST">
-                                                    <button type="submit" class="btn btn-outline"
-                                                        style="padding: 0.3rem 0.8rem; font-size: 0.8rem;">Simulate
-                                                        Check-in</button>
+                                                    <button type="submit" class="btn btn-outline btn-sm">Simulate Check-in</button>
                                                 </form>
                                             </c:if>
                                         </div>
@@ -252,13 +250,13 @@
                                     <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                                         <div style="display: flex; gap: 0.5rem;">
                                             <a href="${pageContext.request.contextPath}/user/event/ticket/${reg.id != 0 ? reg.id : '501'}"
-                                                class="btn btn-primary" style="flex: 1; min-width: 120px;">
+                                                class="btn btn-primary btn-sm" style="flex: 1; min-width: 120px;">
                                                 <i class="fas fa-qrcode"></i> Ticket
                                             </a>
                                             <a href="${pageContext.request.contextPath}/user/event/download-ticket/${reg.id != 0 ? reg.id : '501'}"
                                                 data-title="<c:out value='${reg.event.title}'/>"
                                                 onclick="showToast('Downloading ticket for: ' + this.getAttribute('data-title'))"
-                                                class="btn btn-outline" style="padding: 0.5rem;" title="Download PDF">
+                                                class="btn btn-outline btn-sm" style="width: 38px; height: 38px; padding: 0;" title="Download PDF">
                                                 <i class="fas fa-download"></i>
                                             </a>
                                         </div>
@@ -267,26 +265,26 @@
                                             <a href="${pageContext.request.contextPath}/user/event/calendar/${reg.id != 0 ? reg.id : '501'}"
                                                 data-title="<c:out value='${reg.event.title}'/>"
                                                 onclick="showToast('Exporting calendar for: ' + this.getAttribute('data-title'))"
-                                                class="btn btn-outline" style="flex: 1; font-size: 0.85rem;">
+                                                class="btn btn-outline btn-sm" style="flex: 1;">
                                                 <i class="far fa-calendar-plus"></i> Calendar
                                             </a>
                                             <button onclick="shareEvent(this)" data-id="${reg.event.id}"
-                                                data-title="<c:out value='${reg.event.title}'/>" class="btn btn-outline"
-                                                style="padding: 0.5rem;">
-                                                <i class="fas fa-share-alt"></i>
+                                                data-title="<c:out value='${reg.event.title}'/>" class="btn btn-outline btn-sm action-btn"
+                                                style="width: 38px; height: 38px; padding: 0;" title="Copy Event Link">
+                                                <i class="fas fa-link"></i>
                                             </button>
                                         </div>
 
                                         <div style="display: flex; gap: 0.5rem;">
                                             <a href="${pageContext.request.contextPath}/user/event/details/${reg.event.id}"
-                                                class="btn btn-outline" style="flex: 3; font-size: 0.85rem;">Details</a>
+                                                class="btn btn-outline btn-sm" style="flex: 3;">Details</a>
 
                                             <c:if test="${reg.status != 'Cancelled'}">
                                                 <button onclick="confirmCancel(this)"
                                                     data-reg-id="${reg.id != 0 ? reg.id : '501'}"
                                                     data-title="<c:out value='${reg.event.title}'/>"
-                                                    class="btn btn-outline"
-                                                    style="flex: 1; color: var(--primary-color); border-color: rgba(249, 115, 22, 0.2);"
+                                                    class="btn btn-outline btn-sm"
+                                                    style="flex: 1; color: var(--primary-color); border-color: rgba(249, 115, 22, 0.2); width: 38px; height: 38px; padding: 0;"
                                                     title="Cancel Registration">
                                                     <i class="fas fa-ban"></i>
                                                 </button>
@@ -294,8 +292,8 @@
 
                                             <button onclick="confirmDelete(this)"
                                                 data-reg-id="${reg.id != 0 ? reg.id : '501'}"
-                                                data-title="<c:out value='${reg.event.title}'/>" class="btn btn-outline"
-                                                style="flex: 1; color: var(--danger-color); border-color: rgba(239, 68, 68, 0.2);"
+                                                data-title="<c:out value='${reg.event.title}'/>" class="btn btn-outline btn-sm"
+                                                style="flex: 1; color: var(--danger-color); border-color: rgba(239, 68, 68, 0.2); width: 38px; height: 38px; padding: 0;"
                                                 title="Permanently Delete">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>

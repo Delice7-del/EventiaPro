@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+    <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+    <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
         <!DOCTYPE html>
         <html lang="en">
 
@@ -30,18 +32,16 @@
                 }
 
                 function shareEvent(btn) {
-                    const eventId = btn.getAttribute('data-id');
-                    const eventTitle = btn.getAttribute('data-title');
-                    const url = window.location.origin + '${pageContext.request.contextPath}/user/event/details/' + eventId;
-
+                    const id = btn.getAttribute('data-id');
+                    const title = btn.getAttribute('data-title');
+                    const url = window.location.origin + '${pageContext.request.contextPath}/user/event/details/' + id;
+                    
                     if (navigator.clipboard) {
                         navigator.clipboard.writeText(url).then(() => {
-                            showToast('Link copied: ' + eventTitle);
-                        }).catch(err => {
-                            fallbackCopyTextToClipboard(url, eventTitle);
+                            showToast('Link copied: ' + title);
                         });
                     } else {
-                        fallbackCopyTextToClipboard(url, eventTitle);
+                        showToast('Sharing: ' + title);
                     }
                 }
 
@@ -103,6 +103,30 @@
                     if (success || error) {
                         window.history.replaceState({}, document.title, window.location.pathname);
                     }
+
+                    // WebSocket Client Implementation
+                    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                    const wsUrl = protocol + '//' + window.location.host + '${pageContext.request.contextPath}/notifications';
+                    const socket = new WebSocket(wsUrl);
+
+                    socket.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            const typeMap = {
+                                'EVENT': 'success',
+                                'ANNOUNCEMENT': 'info',
+                                'DELETE': 'error'
+                            };
+                            showToast(data.message, typeMap[data.type] || 'success');
+                        } catch (e) {
+                            // Fallback if message is not JSON
+                            showToast(event.data);
+                        }
+                    };
+
+                    socket.onopen = () => console.log('WebSocket connected');
+                    socket.onclose = () => console.log('WebSocket disconnected');
+                    socket.onerror = (error) => console.error('WebSocket error:', error);
 
                     // Close modal on outside click
                     window.onclick = (event) => {
@@ -216,6 +240,29 @@
                         </div>
                     </div>
 
+                    <!-- Announcements Section -->
+                    <c:if test="${not empty announcements}">
+                        <div class="announcements-section" style="margin-bottom: 2.5rem;">
+                            <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-bullhorn" style="color: var(--primary-color);"></i> Platform Announcements
+                            </h3>
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <c:forEach var="a" items="${announcements}">
+                                    <div class="glass-card announcement-item priority-${a.priority}">
+                                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                                            <h4 style="margin: 0; color: var(--text-primary);">${a.title}</h4>
+                                            <span style="font-size: 0.8rem; color: var(--text-secondary);">
+                                                <fmt:parseDate value="${a.createdAt}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedDate" type="both" />
+                                                <fmt:formatDate value="${parsedDate}" pattern="MMM dd, HH:mm" />
+                                            </span>
+                                        </div>
+                                        <p style="margin: 0; color: var(--text-secondary); line-height: 1.5;">${a.message}</p>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </div>
+                    </c:if>
+
                     <!-- Search & Filter -->
                     <div class="glass-card search-card" style="margin-bottom: 2rem;">
                         <form action="${pageContext.request.contextPath}/user/discover" method="GET">
@@ -263,10 +310,34 @@
                         <c:forEach var="event" items="${events}">
                             <div class="glass-card event-card"
                                 style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
-                                <div
-                                    style="height: 140px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); position: relative;">
+                                <div style="height: 180px; position: relative; background-color: var(--bg-card);">
+                                    <c:set var="target" value="${fn:toLowerCase(event.title)} ${fn:toLowerCase(event.category.name)}" />
+                                    <c:choose>
+                                        <c:when test="${fn:contains(target, 'tech') || fn:contains(target, 'ai') || fn:contains(target, 'code') || fn:contains(target, 'software') || fn:contains(target, 'data') || fn:contains(target, 'web')}">
+                                            <c:set var="imgUrl" value="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=800" />
+                                        </c:when>
+                                        <c:when test="${fn:contains(target, 'design') || fn:contains(target, 'ux') || fn:contains(target, 'ui') || fn:contains(target, 'art') || fn:contains(target, 'creative') || fn:contains(target, 'prototype')}">
+                                            <c:set var="imgUrl" value="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=800" />
+                                        </c:when>
+                                        <c:when test="${fn:contains(target, 'music') || fn:contains(target, 'concert') || fn:contains(target, 'band') || fn:contains(target, 'party') || fn:contains(target, 'dance') || fn:contains(target, 'show') || fn:contains(target, 'gig')}">
+                                            <c:set var="imgUrl" value="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=800" />
+                                        </c:when>
+                                        <c:when test="${fn:contains(target, 'food') || fn:contains(target, 'drink') || fn:contains(target, 'festival') || fn:contains(target, 'dinner') || fn:contains(target, 'lunch') || fn:contains(target, 'gourmet') || fn:contains(target, 'cooking')}">
+                                            <c:set var="imgUrl" value="https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&q=80&w=800" />
+                                        </c:when>
+                                        <c:when test="${fn:contains(target, 'sport') || fn:contains(target, 'fitness') || fn:contains(target, 'yoga') || fn:contains(target, 'match') || fn:contains(target, 'game') || fn:contains(target, 'tournament')}">
+                                            <c:set var="imgUrl" value="https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&q=80&w=800" />
+                                        </c:when>
+                                        <c:when test="${fn:contains(target, 'business') || fn:contains(target, 'seminar') || fn:contains(target, 'marketing') || fn:contains(target, 'startup') || fn:contains(target, 'entrepreneur') || fn:contains(target, 'network') || fn:contains(target, 'conference')}">
+                                            <c:set var="imgUrl" value="https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&q=80&w=800" />
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set var="imgUrl" value="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=800" />
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <img src="${imgUrl}" alt="Event Image" style="width: 100%; height: 100%; object-fit: cover;">
                                     <span class="status-badge"
-                                        style="position: absolute; top: 1rem; left: 1rem; background: rgba(255,255,255,0.9); color: var(--primary-color); font-weight: 600;">
+                                        style="position: absolute; top: 1rem; left: 1rem; background: rgba(255,255,255,0.9); color: var(--primary-color); font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 5px; font-size: 0.8rem;">
                                         ${event.category.name}
                                     </span>
 
@@ -274,11 +345,9 @@
                                         style="position: absolute; top: 1rem; right: 1rem; display: flex; gap: 0.5rem;">
                                         <!-- Share Button -->
                                         <button onclick="shareEvent(this)" data-id="${event.id}"
-                                            data-title="<c:out value=" ${event.title}" />"
-                                        style="width: 32px; height: 32px; border-radius: 50%; border: none; background:
-                                        rgba(255,255,255,0.9); color: var(--text-primary); cursor: pointer; display:
-                                        flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
-                                        <i class="fas fa-share-alt"></i>
+                                                data-title="<c:out value="${event.title}" />"
+                                                class="btn btn-outline btn-sm action-btn" title="Copy Event Link">
+                                            <i class="fas fa-link"></i>
                                         </button>
 
                                         <!-- Save/Heart Button -->
@@ -321,11 +390,9 @@
                                         </span>
                                         <div style="display: flex; gap: 0.5rem;">
                                             <a href="${pageContext.request.contextPath}/user/event/details/${event.id}"
-                                                class="btn btn-outline"
-                                                style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">View Details</a>
+                                                class="btn btn-outline btn-sm" style="flex: 1; text-align: center; white-space: nowrap; padding: 0.5rem 1rem;">View Details</a>
                                             <button type="button" onclick="openRegModal(this)" data-id="${event.id}"
-                                                data-title="<c:out value=" ${event.title}" />" class="btn btn-primary"
-                                            style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Register</button>
+                                                data-title="<c:out value="${event.title}" />" class="btn btn-primary btn-sm" style="flex: 1; text-align: center; white-space: nowrap; padding: 0.5rem 1rem;">Register</button>
                                         </div>
                                     </div>
                                 </div>

@@ -55,8 +55,31 @@ public class EventDAO {
     }
 
     public List<Event> getAllEvents() {
+        return searchEvents(null, null);
+    }
+
+    public List<Event> searchEvents(Integer categoryId, String searchQuery) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("from Event order by eventDate asc", Event.class).list();
+            String hql = "from Event e where 1=1";
+            
+            if (categoryId != null && categoryId > 0) {
+                hql += " and e.category.id = :catId";
+            }
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                hql += " and (lower(e.title) like :search or lower(e.description) like :search)";
+            }
+            hql += " order by eventDate asc";
+
+            var query = session.createQuery(hql, Event.class);
+            
+            if (categoryId != null && categoryId > 0) {
+                query.setParameter("catId", categoryId);
+            }
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                query.setParameter("search", "%" + searchQuery.toLowerCase().trim() + "%");
+            }
+            
+            return query.list();
         } catch (Exception e) {
             e.printStackTrace();
             return new java.util.ArrayList<>();
@@ -108,4 +131,5 @@ public class EventDAO {
             return false;
         }
     }
+
 }

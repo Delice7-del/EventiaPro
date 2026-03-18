@@ -6,9 +6,9 @@ import org.example.eventiapro.dao.RegistrationDAO;
 import org.example.eventiapro.dao.SavedEventDAO;
 import org.example.eventiapro.dao.UserDAO;
 import org.example.eventiapro.model.Event;
-import org.example.eventiapro.model.SavedEvent;
 import org.example.eventiapro.model.User;
 import org.example.eventiapro.model.Registration;
+import org.example.eventiapro.dao.AnnouncementDAO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -33,6 +33,7 @@ public class UserServlet extends HttpServlet {
     private CategoryDAO categoryDAO;
     private SavedEventDAO savedEventDAO;
     private VenueDAO venueDAO;
+    private AnnouncementDAO announcementDAO;
 
     @Override
     public void init() throws ServletException {
@@ -43,6 +44,7 @@ public class UserServlet extends HttpServlet {
         categoryDAO = new CategoryDAO();
         savedEventDAO = new SavedEventDAO();
         venueDAO = new VenueDAO();
+        announcementDAO = new AnnouncementDAO();
         System.out.println("DEBUG: UserServlet initialized.");
     }
 
@@ -77,6 +79,21 @@ public class UserServlet extends HttpServlet {
 
         if (pathInfo.equals("/settings")) {
             showSettings(req, resp);
+            return;
+        }
+
+        if (pathInfo.startsWith("/event/ticket/")) {
+            showTicket(req, resp);
+            return;
+        }
+
+        if (pathInfo.startsWith("/event/download-ticket/")) {
+            handleDownloadTicket(req, resp);
+            return;
+        }
+
+        if (pathInfo.startsWith("/event/calendar/")) {
+            handleExportCalendar(req, resp);
             return;
         }
 
@@ -116,6 +133,21 @@ public class UserServlet extends HttpServlet {
         }
         if ("/settings/update-profile".equals(pathInfo)) {
             handleUpdateProfile(req, resp);
+            return;
+        }
+
+        if (pathInfo != null && pathInfo.startsWith("/registrations/cancel/")) {
+            handleCancelRegistration(req, resp);
+            return;
+        }
+
+        if (pathInfo != null && pathInfo.startsWith("/registrations/delete/")) {
+            handleDeleteRegistration(req, resp);
+            return;
+        }
+
+        if (pathInfo != null && pathInfo.startsWith("/registrations/check-in/")) {
+            handleCheckInRegistration(req, resp);
             return;
         }
 
@@ -177,8 +209,20 @@ public class UserServlet extends HttpServlet {
     private void showDiscoverPage(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         User user = (User) req.getSession().getAttribute("user");
-        List<Event> events = eventDAO.getAllEvents();
-        if (events.isEmpty()) {
+        
+        String searchParam = req.getParameter("search");
+        String catParam = req.getParameter("categoryId");
+        Integer categoryId = null;
+        
+        if (catParam != null && !catParam.trim().isEmpty()) {
+            try {
+                categoryId = Integer.parseInt(catParam);
+            } catch (NumberFormatException ignored) {}
+        }
+
+        List<Event> events = eventDAO.searchEvents(categoryId, searchParam);
+        
+        if (events.isEmpty() && searchParam == null && categoryId == null) {
             System.out.println("DEBUG: No events found, creating mock events...");
             createMockEvents();
             events = eventDAO.getAllEvents();
@@ -192,6 +236,7 @@ public class UserServlet extends HttpServlet {
 
         req.setAttribute("events", events);
         req.setAttribute("categories", categoryDAO.getAllCategories());
+        req.setAttribute("announcements", announcementDAO.getAllAnnouncements());
         req.getRequestDispatcher("/WEB-INF/views/user/discover.jsp").forward(req, resp);
     }
 
@@ -250,11 +295,11 @@ public class UserServlet extends HttpServlet {
 
         long now = System.currentTimeMillis();
         Event event1 = new Event("Spring Festival", "Celebrate spring!", new Date(now + 86400000L * 7), new Time(now),
-                venue, 100, cat, 1, 0.0);
+                venue, 100, cat, 0.0);
         eventDAO.addEvent(event1);
 
         Event event2 = new Event("Tech Meetup", "Latest in AI", new Date(now + 86400000L * 14), new Time(now), venue,
-                50, cat, 1, 15.0);
+                50, cat, 15.0);
         eventDAO.addEvent(event2);
 
         System.out.println("DEBUG: Mock categories, venues, and events created.");
@@ -355,6 +400,117 @@ public class UserServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             e.printStackTrace();
             resp.sendRedirect(req.getContextPath() + "/user/dashboard?error=Invalid+event+ID");
+        }
+    }
+
+    private void showTicket(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            int regId = Integer.parseInt(req.getPathInfo().substring("/event/ticket/".length()));
+            Registration reg = regDAO.getRegistrationById(regId);
+            if (reg != null) {
+                req.setAttribute("registration", reg);
+                req.getRequestDispatcher("/WEB-INF/views/user/ticket.jsp").forward(req, resp);
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/user/registrations?error=Ticket+not+found");
+            }
+        } catch (Exception e) {
+            resp.sendRedirect(req.getContextPath() + "/user/registrations?error=Invalid+ticket+ID");
+        }
+    }
+
+    private void handleDownloadTicket(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            int regId = Integer.parseInt(req.getPathInfo().substring("/event/download-ticket/".length()));
+            Registration reg = regDAO.getRegistrationById(regId);
+            if (reg != null) {
+                Event event = reg.getEvent();
+                resp.setContentType("text/plain");
+                resp.setHeader("Content-Disposition", "attachment;filename=ticket_" + regId + ".txt");
+                
+                StringBuilder sb = new StringBuilder();
+                sb.append("--- EVENTIA PRO TICKET ---\n");
+                sb.append("Ticket ID: ").append(regId).append("\n");
+                sb.append("Event: ").append(event.getTitle()).append("\n");
+                sb.append("Date: ").append(event.getEventDate()).append("\n");
+                sb.append("Time: ").append(event.getEventTime()).append("\n");
+                sb.append("Venue: ").append(event.getVenue() != null ? event.getVenue().getName() : "Online").append("\n");
+                sb.append("--------------------------\n");
+                
+                resp.getWriter().write(sb.toString());
+            } else {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
+
+    private void handleExportCalendar(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            int regId = Integer.parseInt(req.getPathInfo().substring("/event/calendar/".length()));
+            Registration reg = regDAO.getRegistrationById(regId);
+            if (reg != null) {
+                Event event = reg.getEvent();
+                resp.setContentType("text/calendar");
+                resp.setHeader("Content-Disposition", "attachment;filename=event_" + event.getId() + ".ics");
+
+                String start = event.getEventDate().toString().replace("-", "") + "T090000Z";
+                String end = event.getEventDate().toString().replace("-", "") + "T120000Z";
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\n");
+                sb.append("SUMMARY:").append(event.getTitle()).append("\n");
+                sb.append("DESCRIPTION:").append(event.getDescription().replace("\n", " ")).append("\n");
+                sb.append("DTSTART:").append(start).append("\n");
+                sb.append("DTEND:").append(end).append("\n");
+                sb.append("LOCATION:").append(event.getVenue() != null ? event.getVenue().getName() : "Online").append("\n");
+                sb.append("END:VEVENT\nEND:VCALENDAR");
+
+                resp.getWriter().write(sb.toString());
+            } else {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
+
+    private void handleCancelRegistration(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            int regId = Integer.parseInt(req.getPathInfo().substring("/registrations/cancel/".length()));
+            if (regDAO.cancelRegistration(regId)) {
+                resp.sendRedirect(req.getContextPath() + "/user/registrations?success=Registration+cancelled");
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/user/registrations?error=Cancellation+failed");
+            }
+        } catch (Exception e) {
+            resp.sendRedirect(req.getContextPath() + "/user/registrations?error=Invalid+ID");
+        }
+    }
+
+    private void handleDeleteRegistration(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            int regId = Integer.parseInt(req.getPathInfo().substring("/registrations/delete/".length()));
+            if (regDAO.deleteRegistration(regId)) {
+                resp.sendRedirect(req.getContextPath() + "/user/registrations?success=Registration+deleted");
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/user/registrations?error=Delete+failed");
+            }
+        } catch (Exception e) {
+            resp.sendRedirect(req.getContextPath() + "/user/registrations?error=Invalid+ID");
+        }
+    }
+
+    private void handleCheckInRegistration(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            int regId = Integer.parseInt(req.getPathInfo().substring("/registrations/check-in/".length()));
+            if (regDAO.updateStatus(regId, "Attended")) {
+                resp.sendRedirect(req.getContextPath() + "/user/registrations?success=Check-in+successful");
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/user/registrations?error=Check-in+failed");
+            }
+        } catch (Exception e) {
+            resp.sendRedirect(req.getContextPath() + "/user/registrations?error=Invalid+ID");
         }
     }
 }

@@ -1,5 +1,5 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+    <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
         <!DOCTYPE html>
         <html lang="en">
 
@@ -179,8 +179,32 @@
                             style="padding: 1.5rem; max-width: 800px; margin: 3rem auto 0 auto;">
 
                             <!-- Header Banner -->
-                            <div class="event-banner">
-                                <span class="status-badge event-category-badge">
+                            <c:set var="target" value="${fn:toLowerCase(event.title)} ${fn:toLowerCase(event.category.name)}" />
+                            <c:choose>
+                                <c:when test="${fn:contains(target, 'tech') || fn:contains(target, 'ai') || fn:contains(target, 'code') || fn:contains(target, 'software') || fn:contains(target, 'data') || fn:contains(target, 'web')}">
+                                    <c:set var="imgUrl" value="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=800" />
+                                </c:when>
+                                <c:when test="${fn:contains(target, 'design') || fn:contains(target, 'ux') || fn:contains(target, 'ui') || fn:contains(target, 'art') || fn:contains(target, 'creative') || fn:contains(target, 'prototype')}">
+                                    <c:set var="imgUrl" value="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=800" />
+                                </c:when>
+                                <c:when test="${fn:contains(target, 'music') || fn:contains(target, 'concert') || fn:contains(target, 'band') || fn:contains(target, 'party') || fn:contains(target, 'dance') || fn:contains(target, 'show') || fn:contains(target, 'gig')}">
+                                    <c:set var="imgUrl" value="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=800" />
+                                </c:when>
+                                <c:when test="${fn:contains(target, 'food') || fn:contains(target, 'drink') || fn:contains(target, 'festival') || fn:contains(target, 'dinner') || fn:contains(target, 'lunch') || fn:contains(target, 'gourmet') || fn:contains(target, 'cooking')}">
+                                    <c:set var="imgUrl" value="https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&q=80&w=800" />
+                                </c:when>
+                                <c:when test="${fn:contains(target, 'sport') || fn:contains(target, 'fitness') || fn:contains(target, 'yoga') || fn:contains(target, 'match') || fn:contains(target, 'game') || fn:contains(target, 'tournament')}">
+                                    <c:set var="imgUrl" value="https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&q=80&w=800" />
+                                </c:when>
+                                <c:when test="${fn:contains(target, 'business') || fn:contains(target, 'seminar') || fn:contains(target, 'marketing') || fn:contains(target, 'startup') || fn:contains(target, 'entrepreneur') || fn:contains(target, 'network') || fn:contains(target, 'conference')}">
+                                    <c:set var="imgUrl" value="https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&q=80&w=800" />
+                                </c:when>
+                                <c:otherwise>
+                                    <c:set var="imgUrl" value="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=800" />
+                                </c:otherwise>
+                            </c:choose>
+                            <div class="event-banner" style="background: url('${imgUrl}') center/cover no-repeat; height: 300px; border-radius: 12px; margin-bottom: 2rem; position: relative;">
+                                <span class="status-badge event-category-badge" style="position: absolute; bottom: 1.5rem; left: 1.5rem;">
                                     ${event.category.name}
                                 </span>
                             </div>

@@ -12,6 +12,7 @@
     --secondary-color: #38BDF8;
     /* Soft Blue */
     --success-color: #22C55E;
+    --warning-color: #F59E0B;
     --danger-color: #EF4444;
 
     /* Backgrounds */
@@ -505,3 +506,22 @@ td {
     font-size: 0.85rem;
     font-weight: 600;
 }
+
+/* Announcement Cards */
+.announcement-card {
+    margin-bottom: 1.5rem;
+}
+
+.announcement-item {
+    border-left-width: 4px;
+    border-left-style: solid;
+    transition: transform 0.2s ease;
+}
+
+.announcement-item:hover {
+    transform: translateX(5px);
+}
+
+.priority-High { border-left-color: var(--danger-color); }
+.priority-Medium { border-left-color: var(--warning-color); }
+.priority-Low { border-left-color: var(--primary-color); }

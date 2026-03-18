@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd"
+         version="6.1">
+
+    <display-name>EventiaPro</display-name>
+
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!-- Explicitly map index.jsp to ensure it is handled even if filter logic is slightly off -->
+    <servlet>
+        <servlet-name>IndexJSP</servlet-name>
+        <jsp-file>/index.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>IndexJSP</servlet-name>
+        <url-pattern>/index.jsp</url-pattern>
+    </servlet-mapping>
+
+    <!-- Explicitly map the health check if annotation scanning fails for some reason -->
+    <servlet>
+        <servlet-name>HealthCheck</servlet-name>
+        <servlet-class>org.example.eventiapro.controller.HealthCheckServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>HealthCheck</servlet-name>
+        <url-pattern>/health</url-pattern>
+    </servlet-mapping>
+
+</web-app>

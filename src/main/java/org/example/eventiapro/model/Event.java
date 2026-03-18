@@ -37,8 +37,6 @@ public class Event {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @Column(name = "created_by", nullable = false)
-    private int createdBy;
 
     public Event() {
     }
@@ -46,7 +44,7 @@ public class Event {
     // ✅ Constructor WITHOUT ID (important!)
     public Event(String title, String description, Date eventDate,
             Time eventTime, Venue venue, int capacity,
-            Category category, int createdBy, double ticketPrice) {
+            Category category, double ticketPrice) {
 
         this.title = title;
         this.description = description;
@@ -55,7 +53,6 @@ public class Event {
         this.venue = venue;
         this.capacity = capacity;
         this.category = category;
-        this.createdBy = createdBy;
         this.ticketPrice = ticketPrice;
     }
 
@@ -133,11 +130,4 @@ public class Event {
         this.category = category;
     }
 
-    public int getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(int createdBy) {
-        this.createdBy = createdBy;
-    }
 }

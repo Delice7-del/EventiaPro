@@ -81,8 +81,6 @@
                                     <select name="role" class="filter-select" onchange="this.form.submit()">
                                         <option value="All">All Roles</option>
                                         <option value="Admin" ${param.role=='Admin' ? 'selected' : '' }>Admin</option>
-                                        <option value="Organizer" ${param.role=='Organizer' ? 'selected' : '' }>
-                                            Organizer</option>
                                         <option value="User" ${param.role=='User' ? 'selected' : '' }>User</option>
                                     </select>
                                     <div style="position: relative;">
@@ -137,9 +135,6 @@
                                                             <a
                                                                 href="${pageContext.request.contextPath}/admin/user/update-role?userId=${u.id}&role=Admin"><i
                                                                     class="fas fa-user-shield"></i> Make Admin</a>
-                                                            <a
-                                                                href="${pageContext.request.contextPath}/admin/user/update-role?userId=${u.id}&role=Organizer"><i
-                                                                    class="fas fa-briefcase"></i> Make Organizer</a>
                                                             <a
                                                                 href="${pageContext.request.contextPath}/admin/user/update-role?userId=${u.id}&role=User"><i
                                                                     class="fas fa-user"></i> Revoke Roles</a>

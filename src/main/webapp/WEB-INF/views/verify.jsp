@@ -13,7 +13,7 @@
 
         <body style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
 
-            <div class="glass-card" style="width: 380px; padding: 2.5rem; text-align: center;">
+            <div class="glass-card" style="width: 420px; padding: 3.5rem 3rem; text-align: center; margin-top: 100px;"> <!-- Increased top margin to balance space -->
                 <div style="margin-bottom: 2rem;">
                     <div
                         style="width: 80px; height: 80px; background: rgba(30, 144, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
@@ -34,24 +34,24 @@
                     </div>
                 </c:if>
 
-                <form action="${pageContext.request.contextPath}/auth/verify-otp" method="POST">
-                    <div class="form-group" style="text-align: left;">
-                        <label for="otp" style="display: block; margin-bottom: 0.8rem; font-weight: 500;">Verification
-                            Code</label>
-                        <input type="text" id="otp" name="otp" required placeholder="Enter 6-digit code" maxlength="6"
-                            style="text-align: center; letter-spacing: 0.5rem; font-size: 1.2rem; font-weight: 700; padding: 1rem;">
+
+                <form action="${pageContext.request.contextPath}/auth/verify-otp" method="POST" style="margin-top: 2rem;">
+                    <div class="form-group" style="text-align: left; margin-bottom: 2rem;">
+                        <label for="otp" style="display: block; margin-bottom: 1rem; font-weight: 600; color: var(--text-primary);">Enter Code Below</label>
+                        <input type="text" id="otp" name="otp" required placeholder="000000" maxlength="6"
+                            style="text-align: center; letter-spacing: 0.8rem; font-size: 1.5rem; font-weight: 800; padding: 1.2rem; border-radius: 12px; border: 2px solid var(--border-color);">
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-full" style="margin-top: 1rem;">
-                        Verify & Sign In
+                    <button type="submit" class="btn btn-primary btn-full" style="padding: 1.2rem; font-size: 1.1rem; border-radius: 12px;">
+                        Confirm & Access Account
                     </button>
                 </form>
 
-                <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
-                    <p style="color: var(--text-secondary); font-size: 0.85rem;">
+                <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">
                         Didn't receive the code?
                         <a href="${pageContext.request.contextPath}/auth/login"
-                            style="color: var(--primary-color); font-weight: 600;">Go Back</a>
+                            style="color: var(--primary-color); font-weight: 600; margin-left: 0.5rem; text-decoration: underline;">Go Back</a>
                     </p>
                 </div>
             </div>

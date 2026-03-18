@@ -39,7 +39,7 @@ public class User {
     private Boolean twoFactorEnabled;
 
     public enum Role {
-        ADMIN, USER, ORGANIZER
+        ADMIN, USER
     }
 
     public User() {

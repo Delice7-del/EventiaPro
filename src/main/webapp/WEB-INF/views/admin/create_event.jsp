@@ -9,6 +9,22 @@
             <title>${not empty event ? 'Edit' : 'Create'} Event - EventiaPro</title>
             <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+            <script>
+                function toggleNewVenueFields(select) {
+                    const newVenueFields = document.getElementById('new-venue-fields');
+                    const inputs = newVenueFields.querySelectorAll('input');
+                    if (select.value === 'other') {
+                        newVenueFields.style.display = 'block';
+                        inputs.forEach(input => input.required = true);
+                    } else {
+                        newVenueFields.style.display = 'none';
+                        inputs.forEach(input => {
+                            input.required = false;
+                            input.value = '';
+                        });
+                    }
+                }
+            </script>
         </head>
 
         <body>
@@ -68,16 +84,31 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
-                                    <label>Venue</label>
-                                    <select name="venueId" required>
-                                        <option value="" disabled selected>Select a venue</option>
-                                        <c:forEach var="v" items="${venues}">
-                                            <option value="${v.id}" ${event.venue.id==v.id ? 'selected' : '' }>${v.name}
-                                                (${v.location}) - Cap: ${v.capacity}</option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
+                                 <div class="form-group">
+                                     <label>Venue</label>
+                                     <select name="venueId" required onchange="toggleNewVenueFields(this)">
+                                         <option value="" disabled selected>Select a venue</option>
+                                         <c:forEach var="v" items="${venues}">
+                                             <option value="${v.id}" ${event.venue.id==v.id ? 'selected' : '' }>${v.name}
+                                                 (${v.location}) - Cap: ${v.capacity}</option>
+                                         </c:forEach>
+                                         <option value="other" style="font-weight: bold; color: var(--primary-color);">-- Other (Add New) --</option>
+                                     </select>
+                                 </div>
+
+                                 <div id="new-venue-fields" style="display: none; background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1); margin-bottom: 1.5rem;">
+                                     <h4 style="margin-top: 0; margin-bottom: 1rem; color: var(--primary-color); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">New Venue Details</h4>
+                                     <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                                         <div class="form-group" style="margin-bottom: 0;">
+                                             <label>Venue Name</label>
+                                             <input type="text" name="newVenueName" placeholder="e.g. Grand Plaza Hall">
+                                         </div>
+                                         <div class="form-group" style="margin-bottom: 0;">
+                                             <label>Location</label>
+                                             <input type="text" name="newVenueLocation" placeholder="e.g. City Center">
+                                         </div>
+                                     </div>
+                                 </div>
 
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                                     <div class="form-group">

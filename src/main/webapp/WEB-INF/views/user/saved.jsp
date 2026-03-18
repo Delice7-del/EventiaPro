@@ -230,14 +230,13 @@
                                     <div
                                         style="margin-top: 1.5rem; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                                         <button onclick="openRegModal(this)" data-id="${event.id}"
-                                            data-title="<c:out value='${event.title}'/>" class="btn btn-primary btn-sm"
-                                            style="padding: 0.6rem 1.2rem; font-size: 0.85rem; border-radius: 8px;">Register</button>
+                                            data-title="<c:out value='${event.title}'/>" class="btn btn-primary btn-sm">Register</button>
 
                                         <a href="${pageContext.request.contextPath}/user/settings?section=notifications"
                                             data-title="<c:out value='${event.title}'/>"
                                             onclick="showToast('Linking to reminders for: ' + this.getAttribute('data-title'))"
-                                            class="btn btn-outline"
-                                            style="width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px;"
+                                            class="btn btn-outline btn-sm"
+                                            style="width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center;"
                                             title="Get Reminders">
                                             <i class="fas fa-bell"></i>
                                         </a>

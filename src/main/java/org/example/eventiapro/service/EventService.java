@@ -42,7 +42,6 @@ public class EventService {
             if (creator == null || creator.getId() <= 0) {
                 throw new IllegalArgumentException("Creator user must be valid and have an ID.");
             }
-            event.setCreatedBy(creator.getId()); // Set creator from the passed User object
             // -------------------------
 
             System.out.println("DEBUG: [Service] Admin attempting to save event (Atomic Flow): " + event.getTitle());

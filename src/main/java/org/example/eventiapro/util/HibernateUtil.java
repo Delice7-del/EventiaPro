@@ -166,7 +166,6 @@ public class HibernateUtil {
                         e1.setTicketPrice(49.99);
                         e1.setCategory(categories.get(0));
                         e1.setVenue(venues.get(1));
-                        e1.setCreatedBy(admin.getId());
                         session.persist(e1);
 
                         Event e2 = new Event();
@@ -178,7 +177,6 @@ public class HibernateUtil {
                         e2.setTicketPrice(150.00);
                         e2.setCategory(categories.get(1));
                         e2.setVenue(venues.get(3));
-                        e2.setCreatedBy(admin.getId());
                         session.persist(e2);
 
                         Event e3 = new Event();
@@ -190,7 +188,6 @@ public class HibernateUtil {
                         e3.setTicketPrice(0.00);
                         e3.setCategory(categories.get(2));
                         e3.setVenue(venues.get(2));
-                        e3.setCreatedBy(admin.getId());
                         session.persist(e3);
 
                         Event e4 = new Event();
@@ -202,7 +199,6 @@ public class HibernateUtil {
                         e4.setTicketPrice(15.00);
                         e4.setCategory(categories.get(3));
                         e4.setVenue(venues.get(1));
-                        e4.setCreatedBy(admin.getId());
                         session.persist(e4);
 
                         tx.commit();

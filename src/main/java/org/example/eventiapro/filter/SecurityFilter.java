@@ -37,11 +37,14 @@ public class SecurityFilter implements Filter {
         System.out.println("DEBUG: Calculated path: " + path);
 
         // Allow access to public pages and static resources
-        boolean isPublicPage = path.startsWith("/auth") || path.equals("/index.jsp") || path.equals("/")
-                || path.contains("css") || path.contains("js");
+        boolean isPublicPage = path.equals("") || path.equals("/") || path.equals("/index.jsp") 
+                || path.equals("/login.jsp") || path.equals("/signup.jsp")
+                || path.startsWith("/auth") || path.contains("css") || path.contains("js")
+                || path.equals("/hello.html");
+                
         boolean isLoggedIn = (session != null && session.getAttribute("user") != null);
 
-        System.out.println("DEBUG: isPublicPage=" + isPublicPage + ", isLoggedIn=" + isLoggedIn);
+        System.out.println("DEBUG: SecurityFilter - Path: '" + path + "', isPublic: " + isPublicPage + ", isLoggedIn: " + isLoggedIn);
 
         if (isPublicPage || isLoggedIn) {
             // Check for Admin access

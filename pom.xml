@@ -19,21 +19,21 @@
 
     <dependencies>
         <dependency>
-            <groupId>jakarta.enterprise</groupId>
-            <artifactId>jakarta.enterprise.cdi-api</artifactId>
-            <version>4.0.1</version>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-web-api</artifactId>
+            <version>10.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>jakarta.ws.rs</groupId>
-            <artifactId>jakarta.ws.rs-api</artifactId>
-            <version>3.1.0</version>
-            <scope>provided</scope>
+            <groupId>jakarta.websocket</groupId>
+            <artifactId>jakarta.websocket-api</artifactId>
+            <version>2.1.1</version>
         </dependency>
+        <!-- Adding websocket client api explicitly as well -->
         <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.0.0</version>
+            <groupId>jakarta.websocket</groupId>
+            <artifactId>jakarta.websocket-client-api</artifactId>
+            <version>2.1.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -100,6 +100,7 @@
             <artifactId>gson</artifactId>
             <version>2.11.0</version>
         </dependency>
+
     </dependencies>
 
     <build>

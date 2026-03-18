@@ -13,6 +13,7 @@ import org.example.eventiapro.dao.VenueDAO;
 import org.example.eventiapro.model.Event;
 import org.example.eventiapro.model.User;
 import org.example.eventiapro.service.EventService;
+import org.example.eventiapro.service.NotificationService;
 
 import java.io.IOException;
 import java.sql.Date;
@@ -29,6 +30,7 @@ public class AdminServlet extends HttpServlet {
 
     private org.example.eventiapro.dao.UserDAO userDAO;
     private EventService eventService;
+    private NotificationService notificationService;
 
     @Override
     public void init() throws ServletException {
@@ -41,6 +43,7 @@ public class AdminServlet extends HttpServlet {
             userDAO = new org.example.eventiapro.dao.UserDAO();
             eventService = new EventService();
             announcementDAO = new org.example.eventiapro.dao.AnnouncementDAO();
+            notificationService = new NotificationService();
             System.out.println("DEBUG: AdminServlet DAOs and Service initialized successfully");
         } catch (Exception e) {
             System.err.println("DEBUG: Error initializing AdminServlet components: " + e.getMessage());
@@ -156,7 +159,6 @@ public class AdminServlet extends HttpServlet {
                 event.setCategory(cat);
                 event.setTicketPrice(price);
                 event.setCapacity(100);
-                event.setCreatedBy(admin.getId());
 
                 // Assuming venue 1 exists or is null if not strict.
                 // We'll skip venue for simplicity or fetch first available if needed.
@@ -241,7 +243,7 @@ public class AdminServlet extends HttpServlet {
 
             request.setAttribute("events", events);
             request.setAttribute("activeEventsCount", activeEvents);
-            request.setAttribute("userCount", users.size());
+            request.setAttribute("userCount", users.size()); 
             request.setAttribute("totalRegistrations", totalRegistrations);
             request.setAttribute("totalRevenue", totalRevenue);
             request.setAttribute("recentUsers", recentUsers);
@@ -407,7 +409,6 @@ public class AdminServlet extends HttpServlet {
                 return;
             }
             Event event = extractEventFromRequest(request);
-            event.setCreatedBy(admin.getId());
 
             System.out.println("DEBUG: Admin attempting to save event (Atomic Flow): " + event.getTitle());
 
@@ -415,6 +416,7 @@ public class AdminServlet extends HttpServlet {
             Event createdEvent = eventService.createEventWithAutoEnroll(event, admin);
 
             if (createdEvent != null) {
+                notificationService.notifyNewEvent(createdEvent.getTitle());
                 request.getSession().setAttribute("success", "Event created successfully!");
                 response.sendRedirect(request.getContextPath() + "/admin/dashboard?success=Event+created");
             } else {
@@ -458,7 +460,11 @@ public class AdminServlet extends HttpServlet {
     private void deleteEvent(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         int id = Integer.parseInt(request.getPathInfo().substring("/event/delete/".length()));
+        Event event = eventDAO.getEventById(id);
+        String title = (event != null) ? event.getTitle() : "Event #" + id;
+
         if (eventDAO.deleteEvent(id)) {
+            notificationService.notifyEventDeleted(title);
             response.sendRedirect(request.getContextPath() + "/admin/dashboard?success="
                     + java.net.URLEncoder.encode("Event deleted successfully", "UTF-8"));
         } else {
@@ -519,6 +525,7 @@ public class AdminServlet extends HttpServlet {
         boolean success = announcementDAO.saveAnnouncement(announcement);
 
         if (success) {
+            notificationService.notifyNewAnnouncement(announcement.getTitle());
             response.sendRedirect(request.getContextPath()
                     + "/admin/messages?success=Announcement+broadcasted+and+saved+successfully");
         } else {
@@ -546,7 +553,22 @@ public class AdminServlet extends HttpServlet {
         String categoryIdStr = request.getParameter("categoryId");
 
         if (venueIdStr != null && !venueIdStr.isEmpty()) {
-            event.setVenue(venueDAO.getVenueById(Integer.parseInt(venueIdStr)));
+            if ("other".equals(venueIdStr)) {
+                String name = request.getParameter("newVenueName");
+                String location = request.getParameter("newVenueLocation");
+                int cap = 0;
+                String capStr = request.getParameter("capacity");
+                if (capStr != null && !capStr.isEmpty()) {
+                    cap = Integer.parseInt(capStr);
+                }
+                
+                org.example.eventiapro.model.Venue newVenue = new org.example.eventiapro.model.Venue(name, location, cap);
+                newVenue = venueDAO.saveAndReturnVenue(newVenue);
+                event.setVenue(newVenue);
+                System.out.println("DEBUG: Created new custom venue: " + name);
+            } else {
+                event.setVenue(venueDAO.getVenueById(Integer.parseInt(venueIdStr)));
+            }
         }
         if (categoryIdStr != null && !categoryIdStr.isEmpty()) {
             event.setCategory(categoryDAO.getCategoryById(Integer.parseInt(categoryIdStr)));
